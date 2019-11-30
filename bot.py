@@ -8,31 +8,56 @@ import registration
 
 from dotenv import load_dotenv
 from discord.ext import commands
+from typing import Union
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='!')
-registeredChannelIds = set()
+bot = commands.Bot(command_prefix='~')
+registeredChannels = dataStore.RegisteredChannels(bot)
+registeredUsers = dataStore.RegisteredUsers(bot)
 
 @bot.event
 async def on_ready():
-    global registeredChannelIds
-    registeredChannelIds = set(dataStore.read())
-    print(f'Read in {len(registeredChannelIds)} Channels')
-
+    global registeredChannel
+    registeredChannels.initialize()
+    registeredUsers.initialize()
+    
+# send message if a member's activity state has changed
 @bot.event
 async def on_member_update(before, after):
     print(f'Received on_member_update for {before.name}')
-    await memberNotifications.checkGameSessionStarted(bot, registeredChannelIds, before, after)
-    await memberNotifications.checkGameSessionEnded(bot, registeredChannelIds, before, after)     
+    await memberNotifications.checkGameSessionStarted(bot, registeredChannels, before, after)
+    await memberNotifications.checkGameSessionEnded(bot, registeredChannels, before, after)     
 
-@bot.command(name='reg', help='Register this text channel as the channel to receive notificatinos of members entering/existing gaming sessions.')
+# update registered channels when one is removed
+@bot.event
+async def on_guild_channel_delete(channel):
+    print(f"channel removed with channeldId: {channel.id}")
+    if channel.id in registeredChannels:
+        print(f"A channel that's registered was removed. channeldId: {channel.id}")
+        registeredChannels.remove(channel.id)
+
+# register a new channel
+@bot.command(name='reg', help='Register this text channel as the channel to receive notificatinos of members entering/exiting gaming sessions.')
 async def registerChannel(ctx):
-    await registration.registerChannel(ctx, registeredChannelIds)
+    await registration.registerChannel(ctx, registeredChannels)
 
+# unregister an existing channel
 @bot.command(name='unreg', help='Unregister a previously registered channel.')
 async def unregisterChannel(ctx):
-    await registration.unregisterChannel(ctx, registeredChannelIds)
+    await registration.unregisterChannel(ctx, registeredChannels)
+
+@bot.command(name='regUser', help='Register to get a DM when a specific user enter/exit a game session')
+async def registerUser(ctx, user: Union[discord.User, discord.Member]):
+    print(f'regUser called on {user.name}')
+    await registration.registerUser(ctx, registeredUsers, user)
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.BadArgument):
+        print('Bad Argument')
+        # await ctx.send('I could not find that member...')
+    print(f'Command error! error: {error}')
 
 bot.run(TOKEN)

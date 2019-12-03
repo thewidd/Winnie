@@ -17,7 +17,7 @@ async def unregisterChannel(ctx, registeredChannels):
         await ctx.channel.send('I will no longer tell you about gaming sessions. Sorry to bother...')
     except KeyError:
         print('No channel has been registerd before.')
-        await ctx.channel.send('This channel has not been registerd yet.')
+        await ctx.channel.send('This channel is not registered for notifications.')
     print('new number of registered channels: ', len(registeredChannels))
 
 async def registerUser(ctx, registeredUsers, user):
@@ -29,7 +29,7 @@ async def registerUser(ctx, registeredUsers, user):
         else:
             registeredUsers.add(user, ctx.message.author)
             print('Added new user')
-            sendDM(ctx.message.author, f'You will now receive notifications for {user.name}')
+            await sendDM(ctx.message.author, f'You will now receive notifications for {user.name}')
     else:
         registeredUsers.add(user, ctx.message.author)
         print('Added new user')

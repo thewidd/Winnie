@@ -1,4 +1,6 @@
 import json
+import threading
+from datetime import timedelta
 
 class RegisteredChannels:
     def __init__(self, bot):
@@ -11,7 +13,7 @@ class RegisteredChannels:
             try:
                 data = json.load(file)
                 registeredChannelIds = data['registeredChannelIds']
-            except:
+            except Exception:
                 registeredChannelIds = []
 
         print (json.dumps(registeredChannelIds))
@@ -37,6 +39,11 @@ class RegisteredChannels:
 
         self.write(self.__registeredChannelIds) # write the dataStore based on the synced channels
         print(f'Number of registered channels after sync: {len(self.__registeredChannelIds)} ')
+
+        oneDay = timedelta(days=1)
+        timer = threading.Timer(oneDay.total_seconds(), self.initialize)
+        timer.daemon = True
+        timer.start()
 
     def getIds(self):
         return self.__registeredChannelIds

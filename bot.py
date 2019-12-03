@@ -26,7 +26,7 @@ async def on_ready():
 # send message if a member's activity state has changed
 @bot.event
 async def on_member_update(before, after):
-    print(f'Received on_member_update for {before.name}')
+    print(f'Received on_member_update for {before.id}')
     await memberNotifications.checkGameSessionStarted(bot, registeredChannels, before, after)
     await memberNotifications.checkGameSessionEnded(bot, registeredChannels, before, after)     
 
@@ -50,7 +50,7 @@ async def unregisterChannel(ctx):
 
 @bot.command(name='regUser', help='Register to get a DM when a specific user enter/exit a game session')
 async def registerUser(ctx, user: Union[discord.User, discord.Member]):
-    print(f'regUser called on {user.name}')
+    print(f'regUser called on {user.id}')
     await registration.registerUser(ctx, registeredUsers, user)
 
 @bot.event

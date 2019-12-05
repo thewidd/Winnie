@@ -13,7 +13,7 @@ async def notifyIfChangedPlayingState(bot, registeredChannels, possibleInGameMem
                     shouldNotifyGuild = True
                     break
 
-    if shouldNotifyGuild:
+    if shouldNotifyGuild and not activityForMessage.name.startswith('Halo: The Master Chief') :
         print(f'processing guildId: {possibleInGameMember.guild.id}')
         channelsToNotify = [channel for channel in possibleInGameMember.guild.text_channels if channel.id in registeredChannels.getIds()]
         

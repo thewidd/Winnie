@@ -2,7 +2,7 @@
 import os
 import csv
 import discord
-import dataStore
+import model.dataStore as dataStore
 import memberNotifications
 import registration
 
@@ -14,14 +14,17 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='~')
+print('bot created')
 registeredChannels = dataStore.RegisteredChannels(bot)
-registeredUsers = dataStore.RegisteredUsers(bot)
+print('channels registered')
+# registeredUsers = dataStore.RegisteredUsers(bot)
+# print('users registered')
 
 @bot.event
 async def on_ready():
     global registeredChannel
     registeredChannels.initialize()
-    registeredUsers.initialize()
+    # registeredUsers.initialize()
     
 # send message if a member's activity state has changed
 @bot.event
@@ -52,6 +55,19 @@ async def unregisterChannel(ctx):
 async def registerUser(ctx, user: Union[discord.User, discord.Member]):
     print(f'regUser called on {user.id}')
     await registration.registerUser(ctx, registeredUsers, user)
+
+@bot.command(name='blacklist')
+async def blacklistGame(ctx, subCmd, nameToBlacklist):
+    subCmd = subCmd.lower()
+    if subCmd == 'game':
+        print('blacklist a game')
+        # 1. Check if the game bing requested is in my Games library (better name than "Games')
+        # 2. If it is, put it on my blackList
+        # 3. Update memberNotifications to first check the blacklist before notifying
+        # 4. Save blacklisted games to DB
+
+    # elif subCmd =  'user':
+    #     print('blacklist a user. Not available yet')
 
 @bot.event
 async def on_command_error(ctx, error):

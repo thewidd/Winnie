@@ -1,4 +1,4 @@
-import dataStore
+import model.dataStore as dataStore
 
 async def registerChannel(ctx, registeredChannels):
     print(f'Register channel cmd. ChannelId: {ctx.channel.id}')

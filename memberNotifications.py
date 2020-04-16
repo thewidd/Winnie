@@ -1,19 +1,19 @@
 import discord
 
 async def notifyIfChangedPlayingState(bot, registeredChannels, possibleInGameMember, possibleOutOfGameMember, notificationTextFormat):
-
+    print(f'possibleInGameMemberActivity: {possibleInGameMember.activity}, \npossibleOutOfGameMemberActivity: {possibleOutOfGameMember.activity}')
     shouldNotifyGuild = False
-    for activity in possibleInGameMember.activities:
-        print('activity name: ', activity.type)
-        if isinstance(activity, discord.Activity) or isinstance(activity, discord.activity.Game):
-            if activity.type == discord.ActivityType.playing:
-                if not any(a.type == discord.ActivityType.playing and a.application_id == activity.application_id for a in possibleOutOfGameMember.activities if isinstance(activity, discord.Activity)):
-                    print('found a change between in-game and out-of-game member updates')
-                    activityForMessage = activity
-                    shouldNotifyGuild = True
-                    break
+    
+    possibleInGameIsInGame = isPlaying(possibleInGameMember)
+    possibleOutOfGameIsOutOfGame = not isPlaying(possibleOutOfGameMember)
+    print(f'possibleInGameIsInGame: {possibleInGameIsInGame}, possibleOutOfGameIsOutOfGame: {possibleOutOfGameIsOutOfGame}')
 
-    if shouldNotifyGuild and not activityForMessage.name.startswith('Halo: The Master Chief') :
+    if possibleInGameIsInGame and possibleOutOfGameIsOutOfGame:
+        print('found a change between in-game and out-of-game member updates')
+        activityForMessage = possibleInGameMember.activity
+        shouldNotifyGuild = True
+
+    if shouldNotifyGuild: # and not activityForMessage.name.startswith('Halo: The Master Chief') :
         print(f'processing guildId: {possibleInGameMember.guild.id}')
         channelsToNotify = [channel for channel in possibleInGameMember.guild.text_channels if channel.id in registeredChannels.getIds()]
         
@@ -21,6 +21,10 @@ async def notifyIfChangedPlayingState(bot, registeredChannels, possibleInGameMem
         sendText = notificationTextFormat.format(possibleInGameMember.name, activityForMessage.name)
         for channelToNotify in channelsToNotify:
             await channelToNotify.send(sendText)
+
+def isPlaying(member):
+    activity = member.activity
+    return (isinstance(activity, discord.Activity) and activity.type == discord.ActivityType.playing) or (isinstance(activity, discord.activity.Game))
 
 async def checkGameSessionStarted(bot, registeredChannels, before, after):
     print('\nchecking game session STARTED')

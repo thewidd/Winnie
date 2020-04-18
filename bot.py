@@ -29,7 +29,7 @@ async def on_ready():
 # send message if a member's activity state has changed
 @bot.event
 async def on_member_update(before, after):
-    print(f'Received on_member_update for {before.id}')
+    # print(f'Received on_member_update for {before.id}')
     await memberNotifications.checkGameSessionStarted(bot, registeredChannels, before, after)
     await memberNotifications.checkGameSessionEnded(bot, registeredChannels, before, after)     
 

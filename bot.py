@@ -42,7 +42,7 @@ async def on_guild_channel_delete(channel):
         registeredChannels.remove(channel.id)
 
 # register a new channel
-@bot.command(name='reg', help='Register this text channel as the channel to receive notificatinos of members entering/exiting gaming sessions.')
+@bot.command(name='reg', help='Register this text channel to receive notifications of members starting/stopping gaming sessions.')
 async def registerChannel(ctx):
     await registration.registerChannel(ctx, registeredChannels)
 
@@ -51,16 +51,16 @@ async def registerChannel(ctx):
 async def unregisterChannel(ctx):
     await registration.unregisterChannel(ctx, registeredChannels)
 
-@bot.command(name='regUser', help='Register to get a DM when a specific user enter/exit a game session')
-async def registerUser(ctx, user: Union[discord.User, discord.Member]):
-    print(f'regUser called on {user.id}')
-    await registration.registerUser(ctx, registeredUsers, user)
+# @bot.command(name='regUser', help='Register to get a DM when a specific user enter/exit a game session')
+# async def registerUser(ctx, user: Union[discord.User, discord.Member]):
+#     print(f'regUser called on {user.id}')
+#     await registration.registerUser(ctx, registeredUsers, user)
 
-@bot.command(name='blacklist')
-async def blacklistGame(ctx, subCmd, nameToBlacklist):
-    subCmd = subCmd.lower()
-    if subCmd == 'game':
-        print('blacklist a game')
+# @bot.command(name='blacklist')
+# async def blacklistGame(ctx, subCmd, nameToBlacklist):
+#     subCmd = subCmd.lower()
+#     if subCmd == 'game':
+#         print('blacklist a game')
         # 1. Check if the game bing requested is in my Games library (better name than "Games')
         # 2. If it is, put it on my blackList
         # 3. Update memberNotifications to first check the blacklist before notifying

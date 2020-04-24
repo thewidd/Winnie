@@ -12,6 +12,7 @@ from typing import Union
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+GUILD_IDS_TO_IGNORE = os.getenv('GUILD_IDS_TO_IGNORE').split()
 
 bot = commands.Bot(command_prefix='~')
 print('bot created')
@@ -19,6 +20,7 @@ registeredChannels = dataStore.RegisteredChannels(bot)
 print('channels registered')
 # registeredUsers = dataStore.RegisteredUsers(bot)
 # print('users registered')
+print(f'GUILD_IDS_TO_IGNORE: {GUILD_IDS_TO_IGNORE}')
 
 @bot.event
 async def on_ready():
@@ -29,9 +31,10 @@ async def on_ready():
 # send message if a member's activity state has changed
 @bot.event
 async def on_member_update(before, after):
-    # print(f'Received on_member_update for {before.id}')
-    await memberNotifications.checkGameSessionStarted(bot, registeredChannels, before, after)
-    await memberNotifications.checkGameSessionEnded(bot, registeredChannels, before, after)     
+    if before.guild.id not in GUILD_IDS_TO_IGNORE:
+        # print(f'Received on_member_update for {before.id}')
+        await memberNotifications.checkGameSessionStarted(bot, registeredChannels, before, after)
+        await memberNotifications.checkGameSessionEnded(bot, registeredChannels, before, after)     
 
 # update registered channels when one is removed
 @bot.event

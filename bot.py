@@ -4,7 +4,8 @@ import csv
 import discord
 import model.registeredChannels
 import model.guildConfigs
-import memberNotifications
+import memberNotifications as mn
+import roleManagement as rm
 import registration
 
 from dotenv import load_dotenv
@@ -23,6 +24,8 @@ print('channels registered')
 # print('users registered')
 print(f'GUILD_IDS_TO_IGNORE: {GUILD_IDS_TO_IGNORE}')
 guildConfigs = model.guildConfigs.GuildConfigs()
+roleManagement = rm.RoleManagement(guildConfigs)
+memberNotifications = mn.MemberNotifications(bot, registeredChannels, guildConfigs, roleManagement)
 
 @bot.event
 async def on_ready():
@@ -37,8 +40,7 @@ async def on_ready():
 async def on_member_update(before, after):
     if before.guild.id not in GUILD_IDS_TO_IGNORE:
         # print(f'Received on_member_update for {before.id}')
-        await memberNotifications.checkGameSessionStarted(bot, registeredChannels, before, after)
-        await memberNotifications.checkGameSessionEnded(bot, registeredChannels, before, after)     
+        await memberNotifications.notifyIfGamingStateChanged(before, after)
 
 # update registered channels when one is removed
 @bot.event

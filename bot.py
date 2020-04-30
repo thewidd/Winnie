@@ -2,7 +2,8 @@
 import os
 import csv
 import discord
-import model.dataStore as dataStore
+import model.registeredChannels
+import model.guildConfigs
 import memberNotifications
 import registration
 
@@ -12,20 +13,23 @@ from typing import Union
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD_IDS_TO_IGNORE = os.getenv('GUILD_IDS_TO_IGNORE').split()
+GUILD_IDS_TO_IGNORE = ''.split() # os.getenv('GUILD_IDS_TO_IGNORE').split()
 
 bot = commands.Bot(command_prefix='~')
 print('bot created')
-registeredChannels = dataStore.RegisteredChannels(bot)
+registeredChannels = model.registeredChannels.RegisteredChannels(bot)
 print('channels registered')
-# registeredUsers = dataStore.RegisteredUsers(bot)
+# registeredUsers = model.registeredUsers.RegisteredUsers(bot)
 # print('users registered')
 print(f'GUILD_IDS_TO_IGNORE: {GUILD_IDS_TO_IGNORE}')
+guildConfigs = model.guildConfigs.GuildConfigs()
 
 @bot.event
 async def on_ready():
-    global registeredChannel
+    print('We have logged in as {0.user}'.format(bot))
+    global registeredChannels
     registeredChannels.initialize()
+    guildConfigs.initialize()
     # registeredUsers.initialize()
     
 # send message if a member's activity state has changed
@@ -54,29 +58,21 @@ async def registerChannel(ctx):
 async def unregisterChannel(ctx):
     await registration.unregisterChannel(ctx, registeredChannels)
 
-# @bot.command(name='regUser', help='Register to get a DM when a specific user enter/exit a game session')
-# async def registerUser(ctx, user: Union[discord.User, discord.Member]):
-#     print(f'regUser called on {user.id}')
-#     await registration.registerUser(ctx, registeredUsers, user)
+@bot.command(name='config', help='''
+Customize notification/bot management of the server. Configurations you can make:
 
-# @bot.command(name='blacklist')
-# async def blacklistGame(ctx, subCmd, nameToBlacklist):
-#     subCmd = subCmd.lower()
-#     if subCmd == 'game':
-#         print('blacklist a game')
-        # 1. Check if the game bing requested is in my Games library (better name than "Games')
-        # 2. If it is, put it on my blackList
-        # 3. Update memberNotifications to first check the blacklist before notifying
-        # 4. Save blacklisted games to DB
-
-    # elif subCmd =  'user':
-    #     print('blacklist a user. Not available yet')
+    ~config createRoleForPlayersOfGame true/false: For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
+''')
+async def config(ctx, key: str, value: bool):
+    global guildConfigs
+    if key in guildConfigs.supportedConfigKeys:
+        guildConfigs.setConfig(ctx.guild.id, key, value)
+    else:
+        await ctx.send("Invalid key given. Please see '~help config' for available configs.")
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.BadArgument):
-        print('Bad Argument')
-        # await ctx.send('I could not find that member...')
-    print(f'Command error! error: {error}')
+    await ctx.send(error)
+    print(f'Command error: {error}')
 
 bot.run(TOKEN)

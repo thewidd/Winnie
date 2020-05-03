@@ -3,11 +3,11 @@ import model.guildConfigs as gf
 import roleManagement as rm
 
 class MemberNotifications:
-    def __init__(self, bot, registeredChannels, guildConfigs, roleManagement):
+    def __init__(self, bot):
         self.__bot = bot
-        self.__registeredChannels = registeredChannels
-        self.__guildConfigs = guildConfigs
-        self.__roleManagement = roleManagement
+        self.__registeredChannels = bot.registeredChannels
+        self.__guildConfigs = bot.guildConfigs
+        self.__roleManagement = bot.roleManagement
 
     async def notifyIfGamingStateChanged(self, before, after):
         await self.__checkGameSessionStarted(before, after)

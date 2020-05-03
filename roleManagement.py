@@ -24,7 +24,6 @@ class RoleManagement:
         return gameName + ' Players'
 
     async def __createRole(self, roleName: str, guild: discord.Guild):
-        
         try:
             role = await guild.create_role(name=roleName, mentionable=True)
             print(f'Created role {roleName}')

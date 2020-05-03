@@ -5,7 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Module",
+            "name": "Run Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "unittest",
+            "args": ["tests.test_eventManager"]
+        },
+        {
+            "name": "Run Bot",
             "type": "python",
             "request": "launch",
             "module": "bot"

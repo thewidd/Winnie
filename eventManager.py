@@ -5,8 +5,8 @@ class EventManager:
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self.bot))
-        self.bot.registeredChannels.initialize(1)
-        self.bot.guildConfigs.initialize(2)
+        self.bot.registeredChannels.initialize()
+        self.bot.guildConfigs.initialize()
         # registeredUsers.initialize()
         
     # send message if a member's activity state has changed

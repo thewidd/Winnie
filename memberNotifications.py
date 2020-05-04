@@ -39,17 +39,21 @@ class MemberNotifications:
             for channelToNotify in channelsToNotify:
                 await channelToNotify.send(sendText)
             
-            if self.__guildConfigs.getConfig(possibleInGameMember.guild.id, 'createRoleForPlayersOfGame'):
-                await self.__roleManagement.updateRoleForGame(possibleInGameMember, activityForMessage.name)
+            # if self.__guildConfigs.getConfig(possibleInGameMember.guild.id, 'createRoleForPlayersOfGame'):
+            #     await self.__roleManagement.updateRoleForGame(possibleInGameMember, activityForMessage.name)
 
     def __isPlaying(self, member):
         '''
         Return: tuple of (isPlaying, member.activity object of the playing activity)
         '''
-        gameActivities = [activity for activity in member.activities if self.__isPlayingGameActivity(activity)]
+        gameActivities = []
+        for activity in member.activities:
+            if self.__isPlayingGameActivity(activity):
+                gameActivities.append(activity)
+        # gameActivities = [activity for activity in member.activities if self.__isPlayingGameActivity(activity)]
         return (len(gameActivities) != 0, next(iter(gameActivities), None))
 
     def __isPlayingGameActivity(self, activity):
-        return (isinstance(activity, discord.Activity) and activity.type == discord.ActivityType.playing) or isinstance(activity, discord.activity.Game)
+        return hasattr(activity, 'type') and activity.type == discord.ActivityType.playing
 
     

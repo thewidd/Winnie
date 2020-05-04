@@ -1,9 +1,8 @@
 import unittest
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from unittest.mock import MagicMock
 import eventManager as em
-from tests.asyncMock import AsyncMock
 import asyncio
 import model.registeredChannels as rc
 import memberNotifications as mn

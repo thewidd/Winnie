@@ -62,9 +62,8 @@ class TestMemberNotifications(unittest.TestCase):
         asyncio.run(self.memberNots._MemberNotifications__checkGameSessionEnded(before, after))
         notify.assert_called_with(before, after, '{} has stopped playing {}.')
 
-    @mock.patch('discord.TextChannel.send', new_callable=AsyncMock)
     @data(None, make_member_spotify_activity())
-    def test_notify_started_playing(self, send_message, additional_activity):
+    def test_notify_started_playing(self, additional_activity):
         # out-of-game to in-game (should notify)
         out_of_game_member, in_game_member = self.make_member_before_after(in_game_before=False, in_game_after=True, additional_activity=additional_activity)
         asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=in_game_member, possibleOutOfGameMember=out_of_game_member, notificationTextFormat=started_playing_format))
@@ -79,9 +78,8 @@ class TestMemberNotifications(unittest.TestCase):
         for channel in in_game_member.guild.text_channels:
             self.assertFalse(channel.send.called) 
 
-    @mock.patch('discord.TextChannel.send', new_callable=AsyncMock)
     @data(None, make_member_spotify_activity())
-    def test_notify_stopped_playing(self, send_message, additional_activity):
+    def test_notify_stopped_playing(self, additional_activity):
         # in-game to out-of-game (should notify)
         in_game_member, out_of_game_member = self.make_member_before_after(in_game_before=True, in_game_after=False, additional_activity=additional_activity)
         asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=in_game_member, possibleOutOfGameMember=out_of_game_member, notificationTextFormat=stopped_playing_format))
@@ -96,18 +94,21 @@ class TestMemberNotifications(unittest.TestCase):
         for channel in in_game_member.guild.text_channels:
             self.assertFalse(channel.send.called) 
 
-    @mock.patch('discord.TextChannel.send', new_callable=AsyncMock)
-    def test_activity_update_still_playing(self, send_message):
-        # one playing activity to another playing activity (should not notify)
-        pass
+    def test_activity_update_still_playing(self):
+        # one playing activity to another playing activity (should not notify).
+        # a good example of this is with Modern Warfare: Warzone, application_id would change inbetween lobby vs game vs loading, etc. If still playing, don't notify
+        before, after = self.make_member_before_after(in_game_before=True, in_game_after=True)
+        after.activities[0].name = before.activities[0].name + '- In Lobby'
+        after.activities[0].id = before.activities[0].application_id + 1
+        # the above changes should have no effect. Only the "playing" activity type should matter
 
-    @mock.patch('discord.TextChannel.send', new_callable=AsyncMock)
-    def test_activity_update_still_not_playing(self, send_message):
-        pass
+        asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=after, possibleOutOfGameMember=before, notificationTextFormat=stopped_playing_format))
+        for channel in after.guild.text_channels:
+            self.assertFalse(channel.send.called) 
 
-    @mock.patch('discord.TextChannel.send', new_callable=AsyncMock)
-    @data(True, False)
-    def test_music_activity_while_while_playing_game(self, send_message, music_started):
+    @data((False, False), (False, True), (True, False), (True, True))
+    @unpack
+    def test_music_activity_change(self, music_started, playing_game):
         before, after = self.make_member_before_after(in_game_before=True, in_game_after=True)
         # before and after both will have the game activity, now we add music, shoud be no notification
         if music_started:

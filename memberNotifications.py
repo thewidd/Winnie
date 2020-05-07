@@ -39,8 +39,8 @@ class MemberNotifications:
             for channelToNotify in channelsToNotify:
                 await channelToNotify.send(sendText)
             
-            # if self.__guildConfigs.getConfig(possibleInGameMember.guild.id, 'createRoleForPlayersOfGame'):
-            #     await self.__roleManagement.updateRoleForGame(possibleInGameMember, activityForMessage.name)
+            if self.__guildConfigs.getConfig(possibleInGameMember.guild.id, 'createRoleForPlayersOfGame'):
+                await self.__roleManagement.updateRoleForGame(possibleInGameMember, activityForMessage.name)
 
     def __isPlaying(self, member):
         '''

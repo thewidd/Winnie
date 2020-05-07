@@ -35,10 +35,12 @@ class TestMemberNotifications(unittest.TestCase):
         self.bot.user = 'Winnie'
 
         # multiple text channels (id == 100 not in the registered channels given from registeredChannels.getIds() above)
-        self.member_text_channel_id = 1
-        self.registered_channel_ids = [self.member_text_channel_id, 2, 3]
-        self.bot.registeredChannels = MagicMock(**{'getIds.return_value': [self.member_text_channel_id, 2, 3]}, spec=rc.RegisteredChannels) # kept on making NonCallableMagicMock, so doing it this way actually works!
-        self.bot.guildConfigs = MagicMock(spec=gc.GuildConfigs)
+        self.member_text_channel_id = 2
+        self.bot.registeredChannels = MagicMock(**{'getIds.return_value': [1, self.member_text_channel_id, 3]}, spec=rc.RegisteredChannels) # kept on making NonCallableMagicMock, so doing it this way actually works!
+        self.guildConfigs = MagicMock(spec=gc.GuildConfigs)
+        self.bot.guildConfigs = self.guildConfigs
+        self.roleManagement = MagicMock(spec=rm.RoleManagement)
+        self.bot.roleManagement = self.roleManagement
 
         self.memberNots = mn.MemberNotifications(self.bot)
 
@@ -118,19 +120,34 @@ class TestMemberNotifications(unittest.TestCase):
         
         asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=after, possibleOutOfGameMember=before, notificationTextFormat=stopped_playing_format))
         for channel in after.guild.text_channels:
-            self.assertFalse(channel.send.called) 
-
-    def test_notify_based_on_channels(self):
-        # has channels registered (notify)
-
-        # has no channels registered (don't notify)
-        pass
+            self.assertFalse(channel.send.called)
 
     def test_create_role_for_players_of_game_config(self):
-        # config is True (update role)
+        self.roleManagement.updateRoleForGame = AsyncMock()
+        # config disabled, player started gaming --> don't update role
+        self.guildConfigs.getConfig.return_value = False
+        out_of_game_member, in_game_member = self.make_member_before_after(in_game_before=False, in_game_after=True)
+        asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=in_game_member, possibleOutOfGameMember=out_of_game_member, notificationTextFormat=started_playing_format))
+        self.assertFalse(self.roleManagement.updateRoleForGame.called) 
 
-        # config is False (don't update role)
-        pass
+        # config enabled, no play state change --> don't update role
+        self.guildConfigs.getConfig.return_value = True
+        out_of_game_member, in_game_member = self.make_member_before_after(in_game_before=True, in_game_after=True)
+        asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=in_game_member, possibleOutOfGameMember=out_of_game_member, notificationTextFormat=started_playing_format))
+        self.assertFalse(self.roleManagement.updateRoleForGame.called) 
+
+        # config enabled, started playing --> update role
+        out_of_game_member, in_game_member = self.make_member_before_after(in_game_before=False, in_game_after=True)
+        asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=in_game_member, possibleOutOfGameMember=out_of_game_member, notificationTextFormat=started_playing_format))
+        self.roleManagement.updateRoleForGame.assert_called_with(in_game_member, 'Overwatch')
+
+        # config enabled, play state change, but no registered channels --> don't update role
+        self.roleManagement.updateRoleForGame = AsyncMock()
+        out_of_game_member, in_game_member = self.make_member_before_after(in_game_before=False, in_game_after=True)
+        self.bot.registeredChannels.getIds.return_value = [1, 3] # remove the text channel that this user is in that is normally registered
+        asyncio.run(self.memberNots._MemberNotifications__notifyIfChangedPlayingState(possibleInGameMember=in_game_member, possibleOutOfGameMember=out_of_game_member, notificationTextFormat=started_playing_format))
+        self.assertTrue(self.member_text_channel_id not in self.bot.registeredChannels.getIds.return_value)
+        self.assertFalse(self.roleManagement.updateRoleForGame.called) 
 
     def make_member_before_after(self, in_game_before: bool, in_game_after: bool, additional_activity: discord.Activity = None) -> (discord.Member, discord.Member):
         member_name = 'Daxter'

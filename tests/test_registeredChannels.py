@@ -4,6 +4,7 @@ import unittest
 import builtins
 from unittest.mock import AsyncMock, MagicMock, patch
 from ddt import ddt, data, unpack
+from datetime import timedelta
 
 import model.registeredChannels as rc
 
@@ -72,8 +73,29 @@ class TestRegisteredChannels(unittest.TestCase):
         dump.assert_called_with({'registeredChannelIds': []}, file_open().__enter__())
         self.assertEqual(dump.call_count, 2)
 
+    @patch('threading.Timer')
+    @patch('builtins.open')
     @patch('json.dump')
     @patch('json.load')
-    def test_initialize(self, load, dump):
-        pass
+    def test_initialize(self, load, dump, file_open, Timer):
+        channel_ids = {1, 2, 3}
+        load.return_value = {'registeredChannelIds': list(channel_ids)}
+        
+        self.reg_channels.initialize()
+        self.assertEqual(dump.call_count, 1)
+        self.assertEqual(dump.call_args.args[0], load.return_value)
+        self.assertEqual(self.reg_channels.getIds(), channel_ids)
+
+        self.bot.get_channel.side_effect = [MagicMock(), None, MagicMock()] 
+        self.reg_channels.initialize()
+        self.assertEqual(dump.call_count, 2)
+        new_set = {1, 3}
+        self.assertEqual(dump.call_args.args[0], {'registeredChannelIds': list(new_set)})
+        self.assertEqual(self.reg_channels.getIds(), new_set)
+
+        Timer.assert_called_with(timedelta(days=1).total_seconds(), self.reg_channels.initialize)
+
+
+
+        
         

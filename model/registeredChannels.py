@@ -7,7 +7,7 @@ class RegisteredChannels:
         self.bot = bot
         self.__registeredChannelIds = set()
 
-    def read(self):
+    def _read(self):
         registeredChannelIds = {}
         with open('guildSettings.json') as file:
             try:
@@ -19,13 +19,13 @@ class RegisteredChannels:
         print (json.dumps(registeredChannelIds))
         return registeredChannelIds
 
-    def write(self, registeredChannelIds):
+    def _write(self, registeredChannelIds):
         with open('guildSettings.json', 'w') as file:
             dataToSave = {'registeredChannelIds': list(registeredChannelIds)}
             json.dump(dataToSave, file)
 
     def initialize(self):
-        self.__registeredChannelIds = set(self.read())
+        self.__registeredChannelIds = set(self._read())
 
         print(f'Read in {len(self.__registeredChannelIds)} Channels')
 
@@ -37,7 +37,7 @@ class RegisteredChannels:
 
         self.__registeredChannelIds.difference_update(channelsToRemove)
 
-        self.write(self.__registeredChannelIds) # write the dataStore based on the synced channels
+        self._write(self.__registeredChannelIds) # write the dataStore based on the synced channels
         print(f'Number of registered channels after sync: {len(self.__registeredChannelIds)} ')
 
         oneDay = timedelta(days=1)
@@ -57,9 +57,9 @@ class RegisteredChannels:
     def add(self, channelId: int):
         if channelId not in self.__registeredChannelIds:
             self.__registeredChannelIds.add(channelId)
-            self.write(self.__registeredChannelIds)
+            self._write(self.__registeredChannelIds)
 
     def remove(self, channelId: int):
         if channelId in self.__registeredChannelIds:
             self.__registeredChannelIds.remove(channelId)
-            self.write(self.__registeredChannelIds)
+            self._write(self.__registeredChannelIds)

@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "module": "unittest",
-            "args": ["tests.test_eventManager", "tests.test_memberNotifications"]
+            "args": ["tests.test_eventManager", "tests.test_memberNotifications", "tests.test_registeredChannels"]
         },
         {
             "name": "Run Bot",

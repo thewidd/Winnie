@@ -54,10 +54,12 @@ class RegisteredChannels:
     def __contains__(self, key):
         return key in self.__registeredChannelIds
 
-    def add(self, channelId):
-        self.__registeredChannelIds.add(channelId)
-        self.write(self.__registeredChannelIds)
+    def add(self, channelId: int):
+        if channelId not in self.__registeredChannelIds:
+            self.__registeredChannelIds.add(channelId)
+            self.write(self.__registeredChannelIds)
 
-    def remove(self, channelId):
-        self.__registeredChannelIds.remove(channelId)
-        self.write(self.__registeredChannelIds)
+    def remove(self, channelId: int):
+        if channelId in self.__registeredChannelIds:
+            self.__registeredChannelIds.remove(channelId)
+            self.write(self.__registeredChannelIds)

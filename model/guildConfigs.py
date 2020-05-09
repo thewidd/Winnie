@@ -26,12 +26,27 @@ class GuildConfigs:
             dataToSave = {'guildConfigs': guildConfigs}
             json.dump(dataToSave, file)
 
-    def setConfig(self, guildId: int, key: str, val: bool):
-        self._configs.setdefault(str(guildId), {})[key] = val
-        self._write(self._configs) # update DB
+    def setConfig(self, guildId: int, key: str, val: bool) -> bool:
+        '''Returns the val that was set on key'''
+        val = bool(val)
+        try:
+            existing_val = self._configs[str(guildId)][key]
+        except KeyError:
+            existing_val = None
+            
+        if existing_val != val:
+            self._configs.setdefault(str(guildId), {})[key] = val
+            self._write(self._configs) # update DB
+        return val
     
     def getConfig(self, guildId: int, key: str) -> bool:
         try:
             return self._configs[str(guildId)][key]
         except KeyError:
             return False
+
+    def get_all_configs(self, guildId: int) -> dict:
+        try:
+            return self._configs[str(guildId)]
+        except KeyError:
+            return {}

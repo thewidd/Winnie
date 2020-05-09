@@ -16,7 +16,6 @@ from typing import Union
 if __name__ == '__main__':
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
-    bot.GUILD_IDS_TO_IGNORE = ''.split() # os.getenv('GUILD_IDS_TO_IGNORE').split()
 
     bot = commands.Bot(command_prefix='~')
     print('bot created')
@@ -24,6 +23,7 @@ if __name__ == '__main__':
     print('channels registered')
     # registeredUsers = model.registeredUsers.RegisteredUsers(bot)
     # print('users registered')
+    bot.GUILD_IDS_TO_IGNORE = ''.split() # os.getenv('GUILD_IDS_TO_IGNORE').split()
     print(f'GUILD_IDS_TO_IGNORE: {bot.GUILD_IDS_TO_IGNORE}')
     bot.guildConfigs = model.guildConfigs.GuildConfigs()
     bot.roleManagement = rm.RoleManagement()
@@ -54,16 +54,39 @@ async def registerChannel(ctx):
 async def unregisterChannel(ctx):
     await registration.unregisterChannel(ctx, bot.registeredChannels)
 
-@bot.command(name='config', help='''
+@bot.command(name='set_config', help='''
 Customize notification/bot management of the server. Configurations you can make:
 
-    ~config createRoleForPlayersOfGame true/false: For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
+    ~set_config createRoleForPlayersOfGame true/false: For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
 ''')
-async def config(ctx, key: str, value: bool):
+async def set_config(ctx, key: str, value: bool):
+    key_value_message_format = '{}: {}'
     if key in bot.guildConfigs.supportedConfigKeys:
-        bot.guildConfigs.setConfig(ctx.guild.id, key, value)
+        try:
+            set_val = bot.guildConfigs.setConfig(ctx.guild.id, key, value)
+            await ctx.send(f'Successfully set config:\n\n{key_value_message_format.format(key, set_val)}')
+        except:
+            await ctx.send('Sorry, there was a problem :(')
     else:
-        await ctx.send("Invalid key given. Please see '~help config' for available configs.")
+        await ctx.send("Invalid key given. Please see '~help set_config' for usage.")
+
+@bot.command(name='get_config', help='''
+Get custom configurations of the server. Configurations you can get:
+
+    ~get_config (Lists all configs)
+    ~get_config createRoleForPlayersOfGame (For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people)
+''')
+async def get_config(ctx, key: str=None):
+    key_value_message_format = '{}: {}'
+    if key == None:
+        config_values = bot.guildConfigs.get_all_configs(ctx.guild.id)
+        message = '\n'.join([key_value_message_format.format(k, bool(v)) for v, k in enumerate(config_values)])
+        await ctx.send(f'Currently set config values:\n\n{message}')
+    elif key in bot.guildConfigs.supportedConfigKeys:
+        config_value = bot.guildConfigs.getConfig(ctx.guild.id, key)
+        await ctx.send(f'Current config:\n\n{key_value_message_format.format(key, config_value)}')
+    else:
+        await ctx.send("Invalid key given. Please see '~help get_config' for usage.")
 
 @bot.event
 async def on_command_error(ctx, error):

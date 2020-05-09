@@ -7,7 +7,8 @@ class RoleManagement:
         roleName = self._roleNameForGame(gameName)
         role = next((role for role in member.guild.roles if role.name == roleName), None)
 
-        # todo: find a better way to create roles. Check if Winnie has ever created a role and knows about it. Only then should I create a role. Or at least setup permissions for that new role correctly
+        # todo: find a better way to create roles. Check if Winnie has ever created a role and knows about it. 
+        # Only then should I create a role. Or at least setup permissions for that new role correctly
         # saying that someone else is managing the role (Winnie)
         if not role:
             print(f'no role with name: {roleName} found')

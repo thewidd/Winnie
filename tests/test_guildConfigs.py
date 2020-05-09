@@ -47,6 +47,22 @@ class TestGuildConfigs(unittest.TestCase):
 
     @patch('builtins.open')
     @patch('json.dump')
+    @patch('json.load')
+    def test_get_all_configs(self, load, dump, file_open):
+        guild_id = 123
+        self.assertEqual(self.configs.get_all_configs(guild_id), {})
+
+        key1 = 'key1'
+        key2 = 'key2'
+        self.configs.setConfig(guild_id, key1, True)
+        self.configs.setConfig(guild_id, key2, False)
+        self.assertEqual(self.configs.get_all_configs(guild_id), {
+            key1: True,
+            key2: False
+        })
+
+    @patch('builtins.open')
+    @patch('json.dump')
     @data(True, False)
     def test_set_config_writes(self, is_config_enabled, dump, file_open):
         configs_dict = { 
@@ -66,6 +82,20 @@ class TestGuildConfigs(unittest.TestCase):
         file_open.assert_called_with('guildConfigs.json', 'w')
         self.assertEqual(dump.call_args.args[0], {'guildConfigs': configs_dict})
         self.assertEqual(dump.call_count, 1)
+
+    def test_multiple_sets_doesnt_write(self):
+        write = MagicMock()
+        self.configs._write = write
+
+        guild_id = 123
+        key = 'key'
+        self.configs.setConfig(guild_id, key, True)
+        write.assert_called_with({str(guild_id): {key: True}})
+        self.assertEqual(write.call_count, 1)
+
+        # set the same value again, no write should happen
+        self.configs.setConfig(guild_id, key, True)
+        self.assertEqual(write.call_count, 1) # no change from before
 
     def test_supported_config_keys(self):
         self.assertEqual(self.configs.supportedConfigKeys, {'createRoleForPlayersOfGame'})

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # print('users registered')
     print(f'GUILD_IDS_TO_IGNORE: {bot.GUILD_IDS_TO_IGNORE}')
     bot.guildConfigs = model.guildConfigs.GuildConfigs()
-    bot.roleManagement = rm.RoleManagement(bot.guildConfigs)
+    bot.roleManagement = rm.RoleManagement()
     bot.memberNotifications = mn.MemberNotifications(bot)
     eventManager = em.EventManager(bot)
 

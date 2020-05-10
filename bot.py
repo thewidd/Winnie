@@ -80,7 +80,7 @@ async def get_config(ctx, key: str=None):
     key_value_message_format = '{}: {}'
     if key == None:
         config_values = bot.guildConfigs.get_all_configs(ctx.guild.id)
-        message = '\n'.join([key_value_message_format.format(k, bool(v)) for v, k in enumerate(config_values)])
+        message = '\n'.join([key_value_message_format.format(k, bool(v)) for k, v in config_values.items()])
         await ctx.send(f'Currently set config values:\n\n{message}')
     elif key in bot.guildConfigs.supportedConfigKeys:
         config_value = bot.guildConfigs.getConfig(ctx.guild.id, key)

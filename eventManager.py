@@ -17,7 +17,6 @@ class EventManager:
 
     # update registered channels when one is removed
     async def on_guild_channel_delete(self, channel):
-        print(f"channel removed with channeldId: {channel.id}")
         if channel.id in self.bot.registeredChannels:
             print(f"A channel that's registered was removed. channeldId: {channel.id}")
             self.bot.registeredChannels.remove(channel.id)

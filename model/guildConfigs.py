@@ -1,7 +1,9 @@
 import json
 
 class GuildConfigs:
-    supportedConfigKeys = {'createRoleForPlayersOfGame'}
+    createRoleForPlayersOfGame = 'createRoleForPlayersOfGame'
+    onDemandVoiceChannelPerGame = 'onDemandVoiceChannelPerGame'
+    supportedConfigKeys = {createRoleForPlayersOfGame, onDemandVoiceChannelPerGame}
 
     def __init__(self):
         self._configs = {}

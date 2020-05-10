@@ -98,7 +98,7 @@ class TestGuildConfigs(unittest.TestCase):
         self.assertEqual(write.call_count, 1) # no change from before
 
     def test_supported_config_keys(self):
-        self.assertEqual(self.configs.supportedConfigKeys, {'createRoleForPlayersOfGame'})
+        self.assertEqual(self.configs.supportedConfigKeys, {'createRoleForPlayersOfGame', 'onDemandGameVoiceChannel'})
 
     @patch('builtins.open')
     @patch('json.dump')

@@ -16,3 +16,10 @@ class VoiceChannelManager:
         else:
             if creator_voice_channel:
                 await creator_voice_channel.delete()
+
+    async def on_voice_state_changed(self, before: discord.VoiceState, after: discord.VoiceState):
+        
+        # if before.channel == channel_winnie_made:
+            # if before.channel and before.channel.members and after.channel and not after.channel.members:
+            #     # set time for this? That way the user can be moved over from the old to the new one
+            #     after.channel.delete()

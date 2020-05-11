@@ -1,0 +1,8 @@
+Add roles for players when they start playing a game
+    Playing game CS:GO, auto create role with name of game
+    Auto-add all people that start playing a game to the same role. That way they can mention the people. (makes sense for people that don't have all notifications turned on, only notifications for specific roles)
+    Add a bot command "config" so that the server users (moderators?) can enable/disable this functionality (disabled by default)
+
+Have a voice channel that creates other voice channels
+    If you're playing a game, create a voice channel that is associated with this gaming instance. See video on iZac Pro in Downloads from the users of Winnie
+    After all people have left the voice channel, remove it.

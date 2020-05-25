@@ -9,12 +9,12 @@ class RegisteredChannels:
 
     def _read(self):
         registeredChannelIds = {}
-        with open('guildSettings.json') as file:
-            try:
+        try:
+            with open('guildSettings.json') as file:
                 data = json.load(file)
                 registeredChannelIds = data['registeredChannelIds']
-            except Exception:
-                registeredChannelIds = []
+        except Exception:
+            registeredChannelIds = []
 
         print (json.dumps(registeredChannelIds))
         return registeredChannelIds

@@ -15,25 +15,35 @@ class RoleManagement:
         # saying that someone else is managing the role (Winnie)
         if not role:
             print(f'no role with name: {roleName} found')
-            role = await self._createRole(roleName, member.guild)
-            for text_channel in channels_to_notify:
-                # todo: mention this role instead of just writing the name
-                await text_channel.send(f'Created new role: {role.mention}')
+            role = await self._createRole(roleName, member.guild, channels_to_notify)
+            if role:
+                for text_channel in channels_to_notify:
+                    await text_channel.send(f'Created new role: {role.mention}')
             
         # check if this person needs to be added to role
         if role and role not in member.roles:
             print('player not found in role, adding them')
-            await member.add_roles(role)
+            try:
+                await member.add_roles(role)
+            except discord.errors.Forbidden as e:
+                await self._notify_permissions_failure(channels_to_notify) 
 
     def _roleNameForGame(self, gameName: str) -> str:
         return gameName + ' Players'
 
-    async def _createRole(self, roleName: str, guild: discord.Guild):
+    async def _createRole(self, roleName: str, guild: discord.Guild, channels_to_notify: [discord.TextChannel]) -> discord.Role:
+        role = None
         try:
             role = await guild.create_role(name=roleName, mentionable=True)
             print(f'Created role {roleName}')
         except discord.InvalidArgument:
             print('Invalid argument passed in to create_role API')
-        except (discord.Forbidden, discord.HTTPException) as e:
+        except discord.Forbidden as e:
+            await self._notify_permissions_failure(channels_to_notify)
+        except discord.HTTPException as e:
             print(e.text)
         return role
+
+    async def _notify_permissions_failure(self, channels_to_notify: [discord.TextChannel]):
+        for text_channel in channels_to_notify:
+            await text_channel.send(f'Winnie was unable to make changes to roles. Please make sure Winnie has the "Manage Roles" permission enabled in Server Settings -> Roles -> Winnie -> Manage Roles. Alternatively, turn off the "createRoleForPlayersOfGame" config via set_config.')

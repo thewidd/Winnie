@@ -29,6 +29,7 @@ if __name__ == '__main__':
     bot.roleManagement = rm.RoleManagement()
     bot.memberNotifications = mn.MemberNotifications(bot)
     eventManager = em.EventManager(bot)
+    bot.is_ready_first_time = False
 
     WINNIE_ALPHA_TESTING_GUILD_ID=650804405104541736
     KIRKOVA_USER_ID = 367433902362460170
@@ -36,7 +37,9 @@ if __name__ == '__main__':
 @bot.event
 async def on_ready():
     await eventManager.on_ready()
-    await send_telemetry()
+    if not bot.is_ready_first_time:
+        await send_telemetry('on_ready')
+        bot.is_ready_first_time = True
     
 # send message if a member's activity state has changed
 @bot.event
@@ -52,7 +55,7 @@ async def on_guild_channel_delete(channel):
 @bot.command(name='reg', help='Register this text channel to receive notifications of members starting/stopping gaming sessions.')
 async def registerChannel(ctx):
     await registration.registerChannel(ctx, bot.registeredChannels)
-    await send_telemetry()
+    await send_telemetry('register_channel')
 
 # unregister an existing channel
 @bot.command(name='unreg', help='Unregister a previously registered channel.')
@@ -98,7 +101,7 @@ async def on_command_error(ctx, error):
     await ctx.send(error)
     print(f'Command error: {error}')
 
-async def send_telemetry():
+async def send_telemetry(origin: str):
     try:
         winnie_alpha_testing_guild = next((guild for guild in bot.guilds if guild.id == WINNIE_ALPHA_TESTING_GUILD_ID), None)
         if winnie_alpha_testing_guild:
@@ -106,7 +109,7 @@ async def send_telemetry():
             if kirkova:
                 if not kirkova.dm_channel:
                     await kirkova.create_dm()
-                await kirkova.dm_channel.send(f'I currently am in {len(bot.guilds)} Discord servers and am registered to {len(bot.registeredChannels)} channels')
+                await kirkova.dm_channel.send(f'{origin}: I currently am in {len(bot.guilds)} Discord servers and am registered to {len(bot.registeredChannels)} channels')
     except:
         print('problem sending telemetry...')
 

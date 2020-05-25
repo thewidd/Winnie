@@ -1,4 +1,5 @@
 import json
+import os.path
 
 class GuildConfigs:
     supportedConfigKeys = {'createRoleForPlayersOfGame'}
@@ -11,12 +12,13 @@ class GuildConfigs:
 
     def _read(self) -> dict:
         configs = {}
-        with open('guildConfigs.json') as file:
-            try:
-                data = json.load(file)
-                configs = data['guildConfigs']
-            except Exception:
-                configs = {}
+        if os.path.exists('guildConfigs.json'):
+            with open('guildConfigs.json') as file:
+                try:
+                    data = json.load(file)
+                    configs = data['guildConfigs']
+                except Exception:
+                    configs = {}
 
         print(configs)
         return configs

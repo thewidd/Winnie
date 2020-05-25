@@ -2,12 +2,15 @@
 class EventManager: 
     def __init__(self, bot):
         self.bot = bot
+        self.initialized = False
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self.bot))
-        self.bot.registeredChannels.initialize()
-        self.bot.guildConfigs.initialize()
-        # registeredUsers.initialize()
+        if not self.initialized:
+            self.initialized = True
+            self.bot.registeredChannels.initialize()
+            self.bot.guildConfigs.initialize()
+            # registeredUsers.initialize()
         
     # send message if a member's activity state has changed
     async def on_member_update(self, before, after):

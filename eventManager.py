@@ -15,7 +15,7 @@ class EventManager:
     # send message if a member's activity state has changed
     async def on_member_update(self, before, after):
         if before.guild.id not in self.bot.GUILD_IDS_TO_IGNORE:
-            # print(f'Received on_member_update for {before.id}')
+            print(f'Received on_member_update for {before.id}')
             await self.bot.memberNotifications.notifyIfGamingStateChanged(before, after)
 
     # update registered channels when one is removed

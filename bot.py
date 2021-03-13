@@ -17,7 +17,9 @@ if __name__ == '__main__':
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
 
-    bot = commands.Bot(command_prefix='~')
+    intents = discord.Intents.default()
+    intents.presences = True
+    bot = commands.Bot(command_prefix='~', intents=intents)
     print('bot created')
     bot.registeredChannels = model.registeredChannels.RegisteredChannels(bot)
     print('channels registered')
@@ -44,7 +46,10 @@ async def on_ready():
 # send message if a member's activity state has changed
 @bot.event
 async def on_member_update(before, after):
-    await eventManager.on_member_update(before, after)
+    if before.id == KIRKOVA_USER_ID:
+        print(3)
+    if before.guild.member_count < 1000 :
+        await eventManager.on_member_update(before, after)
 
 # update registered channels when one is removed
 @bot.event

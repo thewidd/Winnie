@@ -1,6 +1,7 @@
 import json
 import threading
 from datetime import timedelta
+import logging
 
 class RegisteredUsers:
     def __init__(self, bot):

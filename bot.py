@@ -9,11 +9,28 @@ import roleManagement as rm
 import registration
 import eventManager as em
 
+
 from dotenv import load_dotenv
 from discord.ext import commands
 from typing import Union
 
+import logging
+import logging.config
+# logging.config.fileConfig('logging.conf')
+# logger = logging.getLogger('Winnie')
+
 if __name__ == '__main__':
+    # logging.basicConfig(filename='winnie.log', format='%(asctime)s: %(message)s', level=logging.DEBUG)
+
+    # ch = logging.StreamHandler()
+    # ch.setLevel(logging.DEBUG)
+    # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # ch.setFormatter(formatter)
+
+    # logger = logging.getLogger(__name__)
+    # logger.setLevel(logging.DEBUG)
+    # logger.addHandler(ch)
+
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -35,6 +52,7 @@ if __name__ == '__main__':
 
     WINNIE_ALPHA_TESTING_GUILD_ID=650804405104541736
     KIRKOVA_USER_ID = 367433902362460170
+    KIRKOVAK_SERVER_ID = 820173573012455474 # kirkovak, not kirkova
 
 @bot.event
 async def on_ready():
@@ -46,8 +64,9 @@ async def on_ready():
 # send message if a member's activity state has changed
 @bot.event
 async def on_member_update(before, after):
-    if before.id == KIRKOVA_USER_ID:
-        print(3)
+    # only for debugging to help with kirkovak secondary account
+    # if before.guild.id == KIRKOVAK_SERVER_ID or before.guild.id == str(KIRKOVAK_SERVER_ID):
+    #     await eventManager.on_member_update(before, after)
     if before.guild.member_count < 1000 :
         await eventManager.on_member_update(before, after)
 

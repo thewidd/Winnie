@@ -1,3 +1,4 @@
+import logging
 
 class EventManager: 
     def __init__(self, bot):
@@ -15,7 +16,8 @@ class EventManager:
     # send message if a member's activity state has changed
     async def on_member_update(self, before, after):
         if before.guild.id not in self.bot.GUILD_IDS_TO_IGNORE:
-            print(f'Received on_member_update for {before.id}')
+            # logging this too much. Only enable it for debugging
+            # print(f'Received on_member_update for {before.id}')
             await self.bot.memberNotifications.notifyIfGamingStateChanged(before, after)
 
     # update registered channels when one is removed

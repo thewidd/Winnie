@@ -1,4 +1,5 @@
 import discord
+import logging
 
 class RoleUpdate:
     def __init__(self, created_role: discord.Role):

@@ -1,3 +1,5 @@
+import logging
+
 async def registerChannel(ctx, registeredChannels):
     print(f'Register channel cmd. ChannelId: {ctx.channel.id}')
     if ctx.channel.id in registeredChannels.getIds():

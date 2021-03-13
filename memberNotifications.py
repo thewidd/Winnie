@@ -1,6 +1,9 @@
 import discord
 import model.guildConfigs as gf
 import roleManagement as rm
+import logging
+
+import datetime
 
 class MemberNotifications:
     def __init__(self, bot):
@@ -14,12 +17,12 @@ class MemberNotifications:
         await self.__checkGameSessionEnded(before, after)  
 
     async def __checkGameSessionStarted(self, before, after):
-        await self.__notifyIfChangedPlayingState(after, before, '{} has started playing {}.')
+        await self.__notifyIfChangedPlayingState(after, before, '{} has started playing {}.', logAction='Started')
 
     async def __checkGameSessionEnded(self, before, after):
-        await self.__notifyIfChangedPlayingState(before, after, '{} has stopped playing {}.')
+        await self.__notifyIfChangedPlayingState(before, after, '{} has stopped playing {}.', logAction='Stopped')
 
-    async def __notifyIfChangedPlayingState(self, possibleInGameMember, possibleOutOfGameMember, notificationTextFormat):
+    async def __notifyIfChangedPlayingState(self, possibleInGameMember, possibleOutOfGameMember, notificationTextFormat, logAction: str):
         '''
         Send a notification to all registered channels if a user has gone from in-game to out-of-game or vice
         '''    
@@ -34,7 +37,7 @@ class MemberNotifications:
 
         if channelsToNotify:
             # print(f'processing guildId: {possibleInGameMember.guild.id}')
-            print(f"Found a change between in-game and out-of-game member updates. Notifying channelIds: [{ ', '.join([str(channel.id) for channel in channelsToNotify]) }]")
+            print(f"{datetime.datetime.now()} - [{logAction} playing. MemberId: [{possibleInGameMember.id}]. Notifying channelIds: [{ ', '.join([str(channel.id) for channel in channelsToNotify]) }]")
             sendText = notificationTextFormat.format(possibleInGameMember.name, activityForMessage.name)
             for channelToNotify in channelsToNotify:
                 await channelToNotify.send(sendText)
@@ -48,7 +51,7 @@ class MemberNotifications:
         '''
         gameActivities = []
         for activity in member.activities:
-            if self.__isPlayingGameActivity(activity):
+            if member.status == discord.Status.online and self.__isPlayingGameActivity(activity):
                 gameActivities.append(activity)
         # gameActivities = [activity for activity in member.activities if self.__isPlayingGameActivity(activity)]
         return (len(gameActivities) != 0, next(iter(gameActivities), None))

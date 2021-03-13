@@ -1,6 +1,7 @@
 import json
 import threading
 from datetime import timedelta
+import logging
 
 class RegisteredChannels:
     def __init__(self, bot):
@@ -16,7 +17,7 @@ class RegisteredChannels:
         except Exception:
             registeredChannelIds = []
 
-        print (json.dumps(registeredChannelIds))
+        print(json.dumps(registeredChannelIds))
         return registeredChannelIds
 
     def _write(self, registeredChannelIds):

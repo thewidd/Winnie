@@ -1,6 +1,5 @@
 import discord
 import model.guildConfigs as gf
-import roleManagement as rm
 import logging
 
 import datetime

@@ -8,6 +8,8 @@ import memberNotifications as mn
 import roleManagement as rm
 import registration
 import eventManager as em
+# from mongoengine import connect
+# from db import dbTypes
 
 
 from dotenv import load_dotenv
@@ -49,6 +51,13 @@ if __name__ == '__main__':
     bot.memberNotifications = mn.MemberNotifications(bot)
     eventManager = em.EventManager(bot)
     bot.is_ready_first_time = False
+    # connect(db='winnie')
+
+    # testGuildSettings = dbTypes.GuildSettings()
+    # testGuildSettings.guild_id = "123"
+    # testGuildSettings.notification_channels = ["456"]
+    # testGuildSettings.create_role_for_game_players = False
+    # testGuildSettings.save()
 
     WINNIE_ALPHA_TESTING_GUILD_ID=650804405104541736
     KIRKOVA_USER_ID = 367433902362460170

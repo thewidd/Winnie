@@ -39,13 +39,20 @@ class MemberNotifications:
 
         if channelsToNotify:
             # print(f'processing guildId: {possibleInGameMember.guild.id}')
-            print(f"{datetime.datetime.now()} - [{logAction} playing. GuildId: [{possibleInGameMember.guild.id}]MemberId: [{possibleInGameMember.id}]. Notifying channelIds: [{ ', '.join([str(channel.id) for channel in channelsToNotify]) }]")
-            sendText = notificationTextFormat.format(possibleInGameMember.name, activityForMessage.name)
-            for channelToNotify in channelsToNotify:
-                await channelToNotify.send(sendText)
-            
             if self.__guildConfigs.getConfig(possibleInGameMember.guild.id, 'createRoleForPlayersOfGame'):
-                await self.__roleManagement.updateRoleForGame(possibleInGameMember, activityForMessage.name, channelsToNotify)
+                await self.__roleManagement.update_role_for_game(possibleInGameMember, activityForMessage.name, channelsToNotify)
+
+            print(f"{datetime.datetime.now()} - [{logAction} playing. GuildId: [{possibleInGameMember.guild.id}]MemberId: [{possibleInGameMember.id}]. Notifying channelIds: [{ ', '.join([str(channel.id) for channel in channelsToNotify]) }]")
+            for channelToNotify in channelsToNotify:
+                await channelToNotify.send(self.__text_to_send(notificationTextFormat, possibleInGameMember, activityForMessage))
+
+    def __text_to_send(self, notificationTextFormat: str, member: discord.Member, activity: discord.Activity) -> str:
+        send_text = notificationTextFormat.format(member.name, activity.name)
+        if self.__guildConfigs.getConfig(guildId=member.guild.id, key='tagRolesInNotification'):
+            game_role = self.__roleManagement.get_role(guild=member.guild, game_name=activity.name)
+            if game_role:
+                send_text += f' ({game_role.mention})'
+        return send_text
 
     def __isPlaying(self, member):
         '''

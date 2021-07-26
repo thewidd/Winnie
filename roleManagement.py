@@ -1,15 +1,16 @@
 import discord
 import logging
+from typing import Optional
 
 class RoleUpdate:
     def __init__(self, created_role: discord.Role):
         self.created_role = created_role
 
 class RoleManagement:
-    async def updateRoleForGame(self, member: discord.Member, gameName: str, channels_to_notify: [discord.TextChannel]):
+    async def update_role_for_game(self, member: discord.Member, gameName: str, channels_to_notify: [discord.TextChannel]):
         # I can also do role.id, might be good to remember which roles I've created and compare against that instead?
         roleName = self._roleNameForGame(gameName)
-        role = next((role for role in member.guild.roles if role.name == roleName), None)
+        role = self._role_with_name(member.guild, roleName)
 
         # todo: find a better way to create roles. Check if Winnie has ever created a role and knows about it. 
         # Only then should I create a role. Or at least setup permissions for that new role correctly
@@ -29,8 +30,14 @@ class RoleManagement:
             except discord.errors.Forbidden as e:
                 await self._notify_permissions_failure(channels_to_notify) 
 
+    def get_role(self, guild: discord.Guild, game_name: str) -> Optional[discord.Role]:
+        return self._role_with_name(guild, self._roleNameForGame(game_name))
+
     def _roleNameForGame(self, gameName: str) -> str:
         return gameName + ' Players'
+
+    def _role_with_name(self, guild: discord.Guild, role_name: str) -> discord.Role:
+        return next((role for role in guild.roles if role.name == role_name), None)
 
     async def _createRole(self, roleName: str, guild: discord.Guild, channels_to_notify: [discord.TextChannel]) -> discord.Role:
         role = None

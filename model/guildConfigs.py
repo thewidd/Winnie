@@ -3,7 +3,7 @@ import os.path
 import logging
 
 class GuildConfigs:
-    supportedConfigKeys = {'createRoleForPlayersOfGame'}
+    supportedConfigKeys = {'createRoleForPlayersOfGame', 'notifyStoppedPlaying'}
 
     def __init__(self):
         self._configs = {}
@@ -46,7 +46,7 @@ class GuildConfigs:
         try:
             return self._configs[str(guildId)][key]
         except KeyError:
-            return False
+            return None
 
     def get_all_configs(self, guildId: int) -> dict:
         try:

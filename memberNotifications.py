@@ -14,7 +14,9 @@ class MemberNotifications:
 
     async def notifyIfGamingStateChanged(self, before, after):
         await self.__checkGameSessionStarted(before, after)
-        await self.__checkGameSessionEnded(before, after)  
+        notifyIfStopped = self.__guildConfigs.getConfig(before.guild.id, 'notifyStoppedPlaying')
+        if notifyIfStopped == None or notifyIfStopped:
+            await self.__checkGameSessionEnded(before, after)
 
     async def __checkGameSessionStarted(self, before, after):
         await self.__notifyIfChangedPlayingState(after, before, '{} has started playing {}.', logAction='Started')

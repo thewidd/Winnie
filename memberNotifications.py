@@ -37,7 +37,7 @@ class MemberNotifications:
 
         if channelsToNotify:
             # print(f'processing guildId: {possibleInGameMember.guild.id}')
-            print(f"{datetime.datetime.now()} - [{logAction} playing. MemberId: [{possibleInGameMember.id}]. Notifying channelIds: [{ ', '.join([str(channel.id) for channel in channelsToNotify]) }]")
+            print(f"{datetime.datetime.now()} - [{logAction} playing. GuildId: [{possibleInGameMember.guild.id}]MemberId: [{possibleInGameMember.id}]. Notifying channelIds: [{ ', '.join([str(channel.id) for channel in channelsToNotify]) }]")
             sendText = notificationTextFormat.format(possibleInGameMember.name, activityForMessage.name)
             for channelToNotify in channelsToNotify:
                 await channelToNotify.send(sendText)

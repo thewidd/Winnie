@@ -34,8 +34,7 @@ if __name__ == '__main__':
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
 
-    intents = discord.Intents.default()
-    intents.presences = True
+    intents = discord.Intents.all()
     bot = commands.Bot(command_prefix='~', intents=intents)
     print('bot created')
     bot.registeredChannels = model.registeredChannels.RegisteredChannels(bot)
@@ -67,8 +66,7 @@ async def on_member_update(before, after):
     # only for debugging to help with kirkovak secondary account
     # if before.guild.id == KIRKOVAK_SERVER_ID or before.guild.id == str(KIRKOVAK_SERVER_ID):
     #     await eventManager.on_member_update(before, after)
-    if before.guild.member_count < 1000 :
-        await eventManager.on_member_update(before, after)
+    await eventManager.on_member_update(before, after)
 
 # update registered channels when one is removed
 @bot.event

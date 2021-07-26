@@ -3,7 +3,7 @@ import os.path
 import logging
 
 class GuildConfigs:
-    supportedConfigKeys = {'createRoleForPlayersOfGame', 'notifyStoppedPlaying'}
+    supportedConfigKeys = {'createRoleForPlayersOfGame', 'notifyStoppedPlaying', 'tagRolesInNotification'}
 
     def __init__(self):
         self._configs = {}

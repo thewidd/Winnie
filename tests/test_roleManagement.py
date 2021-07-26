@@ -26,7 +26,7 @@ class TestGuildConfigs(unittest.TestCase):
         member.guild.create_role.return_value = created_role
         game_name = 'Overwatch'
 
-        asyncio.run(self.roleMgr.updateRoleForGame(member, gameName=game_name, channels_to_notify=[text_channel]))
+        asyncio.run(self.roleMgr.update_role_for_game(member, gameName=game_name, channels_to_notify=[text_channel]))
 
         role_name = game_name + ' Players'
         member.guild.create_role.assert_called_with(name=role_name, mentionable=True)
@@ -44,7 +44,7 @@ class TestGuildConfigs(unittest.TestCase):
         member.guild.roles = self.make_roles(names=('Role1', 'Role2', role_name))
         member.roles = self.make_roles(names=('Everyone'))
 
-        asyncio.run(self.roleMgr.updateRoleForGame(member, gameName=game_name, channels_to_notify=[text_channel]))
+        asyncio.run(self.roleMgr.update_role_for_game(member, gameName=game_name, channels_to_notify=[text_channel]))
 
         self.assertFalse(member.guild.create_role.called)
         member.add_roles.assert_called_with(member.guild.roles[2])
@@ -61,7 +61,7 @@ class TestGuildConfigs(unittest.TestCase):
         member.guild.roles = self.make_roles(names=('Role1', 'Role2', role_name))
         member.roles = [member.guild.roles[2]] # the Overwatch Players role
 
-        asyncio.run(self.roleMgr.updateRoleForGame(member, gameName=game_name, channels_to_notify=[text_channel]))
+        asyncio.run(self.roleMgr.update_role_for_game(member, gameName=game_name, channels_to_notify=[text_channel]))
 
         self.assertFalse(member.guild.create_role.called)
         self.assertFalse(member.add_roles.called)

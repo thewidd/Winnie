@@ -90,7 +90,10 @@ Customize notification/bot management of the server. Configurations you can make
     ~set_config createRoleForPlayersOfGame true/false
         For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
     ~set_config notifyStoppedPlaying true/false
-        By default, this is true, but if you'd like Winnie to only notify when people START playing games then set this to false via set_config
+        (Default true) Set to false if you'd like Winnie to only notify when people START playing games then set this to false via set_config
+    ~set_config tagRolesInNotification true/false
+        (Default false) Set to true if you want to tag game roles on start/stop notifications. Enabling would say "Bob started playing Overwatch. (@Overwatch players)". Also enable `createRoleForPlayersOfGame` config to auto-create the necessary roles.
+        
 ''')
 async def set_config(ctx, key: str, value: bool):
     key_value_message_format = '{}: {}'
@@ -112,6 +115,8 @@ Get custom configurations of the server. Configurations you can get:
         For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
     ~get_config notifyStoppedPlaying
         By default, this is true, but if you'd like Winnie to only notify when people START playing games then set this to false via set_config
+     ~set_config tagRolesInNotification true/false
+        (Default false) Set to true if you want to tag game roles on start/stop notifications. Enabling would say "Bob started playing Overwatch. (@Overwatch players)". Also enable `createRoleForPlayersOfGame` config to auto-create the necessary roles.
 ''')
 async def get_config(ctx, key: str=None):
     key_value_message_format = '{}: {}'

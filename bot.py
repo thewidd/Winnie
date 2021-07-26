@@ -87,7 +87,10 @@ async def unregisterChannel(ctx):
 @bot.command(name='set_config', help='''
 Customize notification/bot management of the server. Configurations you can make:
 
-    ~set_config createRoleForPlayersOfGame true/false: For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
+    ~set_config createRoleForPlayersOfGame true/false
+        For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
+    ~set_config notifyStoppedPlaying true/false
+        By default, this is true, but if you'd like Winnie to only notify when people START playing games then set this to false via set_config
 ''')
 async def set_config(ctx, key: str, value: bool):
     key_value_message_format = '{}: {}'
@@ -103,8 +106,12 @@ async def set_config(ctx, key: str, value: bool):
 @bot.command(name='get_config', help='''
 Get custom configurations of the server. Configurations you can get:
 
-    ~get_config (Lists all configs)
-    ~get_config createRoleForPlayersOfGame (For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people)
+    ~get_config
+        Lists all configs
+    ~get_config createRoleForPlayersOfGame
+        For any game played by members of this server, Winnie will generate a role for players of that game for easier communication of like-minded people
+    ~get_config notifyStoppedPlaying
+        By default, this is true, but if you'd like Winnie to only notify when people START playing games then set this to false via set_config
 ''')
 async def get_config(ctx, key: str=None):
     key_value_message_format = '{}: {}'

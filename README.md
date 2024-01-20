@@ -6,6 +6,7 @@ Discord bot to notify server members that someone has started playing a game
 - Dependent pip3 libs: (install with `pip3 install -U {name}`
   - [discord.py](https://pypi.org/project/discord.py/)
   - [ddt](https://ddt.readthedocs.io/en/latest/)
+  - [load_dotenv](https://pypi.org/project/python-dotenv/)
 
 ## Steps for setup:
 **1.** Visit https://discord.com/developers/applications and select "Winnie" in the applications section. If you are not a member of the development team, request access from the owner of this repo.
